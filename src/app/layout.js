@@ -2,7 +2,7 @@ import './globals.css';
 
 export const metadata = {
   title: 'PDF Viewer',
-  description: 'Open PDFs by URL slug that matches the PDF name',
+  description: 'Open PDFs by URL slug that matches a PDF filename',
 };
 
 export default function RootLayout({ children }) {
