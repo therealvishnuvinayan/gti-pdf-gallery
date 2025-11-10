@@ -1,3 +1,4 @@
+// src/app/[...slug]/page.js
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -12,8 +13,17 @@ function toSlugBase(name) {
     .toLowerCase();
 }
 
+async function exists(p) {
+  try {
+    await fs.access(p);
+    return true;
+  } catch (e) {
+    return false; // non-empty catch: explicitly handled
+  }
+}
+
 async function resolvePdfFilenameFromSlug(slugParam) {
-  const slugJoined = slugParam.join("/"); 
+  const slugJoined = Array.isArray(slugParam) ? slugParam.join("/") : String(slugParam || "");
   const wanted = toSlugBase(slugJoined);
 
   const publicDir = path.join(process.cwd(), "public");
@@ -31,10 +41,7 @@ async function resolvePdfFilenameFromSlug(slugParam) {
   ];
 
   for (const f of candidates) {
-    try {
-      await fs.access(path.join(publicDir, f));
-      return f;
-    } catch {}
+    if (await exists(path.join(publicDir, f))) return f;
   }
 
   // Slug-equivalent search
@@ -43,17 +50,14 @@ async function resolvePdfFilenameFromSlug(slugParam) {
     if (toSlugBase(base) === wanted) return f;
   }
 
-  // Extra fallback (user typed actual filename)
+  // Extra fallback (user typed actual filename without extension)
   const rawVariants = [
     `${decodeURIComponent(slugJoined)}.pdf`,
     `${slugJoined}.pdf`,
   ];
 
   for (const f of rawVariants) {
-    try {
-      await fs.access(path.join(publicDir, f));
-      return f;
-    } catch {}
+    if (await exists(path.join(publicDir, f))) return f;
   }
 
   return null;
@@ -92,7 +96,7 @@ export default async function PdfViewerPage({ params }) {
         allow="fullscreen; clipboard-read; clipboard-write"
       />
 
-      {/* fallback hidden link */}
+      {/* Hidden direct link as a fallback for browsers that block iframe viewers */}
       <a
         href={`/${encodeURIComponent(filename)}`}
         style={{ position: "absolute", left: -9999, top: -9999 }}
