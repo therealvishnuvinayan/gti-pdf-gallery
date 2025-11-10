@@ -1,17 +1,14 @@
-import { Inter } from 'next/font/google'
-import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
+import './globals.css';
 
 export const metadata = {
-  title: 'Next App',
-  description: 'Next.js starter app',
-}
+  title: 'PDF Viewer',
+  description: 'Open PDFs by URL slug that matches the PDF name',
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body style={{ margin: 0, height: '100%' }}>{children}</body>
     </html>
-  )
+  );
 }
