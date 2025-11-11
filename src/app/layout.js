@@ -1,20 +1,14 @@
+// src/app/layout.js
 export const metadata = {
   title: "GTI PDF Gallery",
-  description: "Open PDFs by URL slug that matches the PDF name",
+  description: "Open PDFs by URL slug that matches the PDF name in /public",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* Ensure proper mobile viewport + safe areas */}
-      <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
-      </head>
-      {/* No margins so the iframe can truly be edge-to-edge */}
-      <body style={{ margin: 0 }}>{children}</body>
+      {/* use 100vh fallback + 100svh for iOS Safari address bar behavior */}
+      <body style={{ margin: 0, height: "100svh" }}>{children}</body>
     </html>
   );
 }
