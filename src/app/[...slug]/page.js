@@ -1,25 +1,28 @@
-"use client";
+// Server Component (no styled-jsx, no client-only imports)
+export const dynamic = "force-static"; // works fine for a simple viewer
 
 export default function PdfPage({ params }) {
-  // support /foo, /a/b/foo -> last segment = "foo"
-  const slug = Array.isArray(params?.slug) ? params.slug.at(-1) : params?.slug || "";
-  const file = slug.toLowerCase().endsWith(".pdf") ? slug : `${slug}.pdf`;
+  const slug = Array.isArray(params.slug) ? params.slug.at(-1) : params.slug;
+  const file = slug.endsWith(".pdf") ? slug : `${slug}.pdf`;
 
-  // IMPORTANT: set this in Vercel project settings (not just .env.local)
-  // Example: https://l1yoomy3tqguuerl.public.blob.vercel-storage.com
+  // MUST be a full origin, no trailing slash, e.g.
+  // https://l1yoomy3tqguuerl.public.blob.vercel-storage.com
   const base = process.env.NEXT_PUBLIC_PDF_BASE_URL || "";
-
-  // Use encodeURIComponent to survive spaces/special chars in filenames
   const href = base
     ? `${base}/${encodeURIComponent(file)}`
-    : `/${encodeURIComponent(file)}`; // falls back to /public if you ever add local files
+    : `/${encodeURIComponent(file)}`; // fallback to /public if you add files later
 
-  // Mobile full-screen: use 100dvh and fallbacks; allow scrolling
+  // On iOS Safari/Chrome, 100vh can be unreliable.
+  // Use modern viewport units and fixed positioning to truly fill the screen.
   const style = {
-    width: "100vw",
-    height: "100dvh",          // modern viewport unit (fixes mobile 100vh bugs)
+    position: "fixed",
+    inset: 0,                 // top:0,right:0,bottom:0,left:0
+    width: "100%",
+    height: "100dvh",         // dynamic viewport height (iOS-friendly)
+    minHeight: "100svh",      // small-viewport fallback
     border: "none",
     display: "block",
+    background: "#000",       // avoids white gaps during render
   };
 
   return (
@@ -28,13 +31,15 @@ export default function PdfPage({ params }) {
         src={href}
         title={file}
         style={style}
-        // these help some in-app browsers
+        // helps some mobile viewers
         allow="fullscreen"
-        // on iOS/Safari, PDF viewer is the browser’s native renderer inside the iframe
+        loading="eager"
       />
-      {/* Fallback link (useful if an in-app browser blocks inline PDFs) */}
+      {/* Fallback link: if a browser refuses inline PDF, user can open externally */}
       <noscript>
-        <a href={href}>{file}</a>
+        <a href={href} target="_blank" rel="noopener noreferrer">
+          Open PDF
+        </a>
       </noscript>
     </>
   );

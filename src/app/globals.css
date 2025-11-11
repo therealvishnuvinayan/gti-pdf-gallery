@@ -1,0 +1,13 @@
+/* Make sure the root can accommodate full-viewport rendering */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* iOS safe-area (not strictly required, but good to have) */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #000; /* matches the iframe bg to prevent flash */
+}

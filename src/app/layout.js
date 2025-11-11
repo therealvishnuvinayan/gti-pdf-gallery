@@ -1,14 +1,20 @@
-import './globals.css';
-
 export const metadata = {
-  title: 'PDF Viewer',
-  description: 'Open PDFs by URL slug that matches a PDF filename',
+  title: "GTI PDF Gallery",
+  description: "Open PDFs by URL slug that matches the PDF name",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, height: '100%' }}>{children}</body>
+      {/* Ensure proper mobile viewport + safe areas */}
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+      </head>
+      {/* No margins so the iframe can truly be edge-to-edge */}
+      <body style={{ margin: 0 }}>{children}</body>
     </html>
   );
 }
